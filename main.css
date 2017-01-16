@@ -1,0 +1,9 @@
+body {
+    text-align: center;
+    background-color: black;
+}
+
+.canvas-container {
+    margin: auto;
+    margin-top: 5vh;
+}
