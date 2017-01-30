@@ -1,3 +1,18 @@
+var config = {
+    apiKey: "AIzaSyDwDVJ4DIHFWPBQYMaiARoiEFGy9Bfa3ZE",
+    authDomain: "formations-7d385.firebaseapp.com",
+    databaseURL: "https://formations-7d385.firebaseio.com",
+    storageBucket: "formations-7d385.appspot.com",
+    messagingSenderId: "666535513846"
+};
+
+firebase.initializeApp(config);
+var database = firebase.database();
+
+database.ref("0").on('value', function(snapshot){
+    console.log(snapshot.val());
+});
+
 var canvas = new fabric.Canvas('canvas', {
     selectionLineWidth: 0,
     selectionColor: 'rgba(0,0,0,0.3)',
@@ -30,13 +45,13 @@ function addDancer() {
             left : i*grid,
             radius: 16,
             fill : 'white',
+            borderColor: '#91ff9e', 
             hasControls: false,
-            hasBorders: false,
             lockScalingX: true,
             lockScalingY: true,
             lockRotation: true
         });
-
+        database.ref("0").push("" + i*grid);
         canvas.add(temp);
     }
 }
