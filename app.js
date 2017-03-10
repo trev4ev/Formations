@@ -8,22 +8,38 @@ var config = {
 
 var dancerCount = 0;
 
+var dancers = new Array();
+
+var canvas = new fabric.Canvas('canvas', {
+    selectionLineWidth: 2,
+    selectionColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'black',
+    left: 500,
+    hasControls: false
+});
+
+var grid = 32;
+
+// create grid
+for (var i = 0; i < ((1024 + grid) / grid); i++) {
+    
+    canvas.add(new fabric.Line([ i * grid, 0, i * grid, 512], { stroke: '#919191', selectable: false, evented: false }));
+    
+    if(i <= 512/grid) {
+    canvas.add(new fabric.Line([ 0, i * grid, 1024, i * grid], { stroke: '#919191', selectable: false, evented: false }));
+    }
+}
+
 firebase.initializeApp(config);
+
 var database = firebase.database();
 
-database.ref("/").on('value', function(snapshot){
-    canvas.clear();
-    for (var i = 0; i < ((1024 + grid) / grid); i++) {
 
-        canvas.add(new fabric.Line([ i * grid, 0, i * grid, 512], { stroke: '#919191', selectable: false, evented: false }));
-
-        if(i <= 512/grid) {
-            canvas.add(new fabric.Line([ 0, i * grid, 1024, i * grid], { stroke: '#919191', selectable: false, evented: false }));
-        }
-    }
+// initial pull of all dancers
+database.ref("/").once('value', function(snapshot){
     dancerCount = parseInt(snapshot.val().dancerCount);
     for(var i = 1; i <= dancerCount; i++){
-        var temp = new fabric.Circle({
+        dancers[i] = new fabric.Circle({
             top : snapshot.val().dancer[i].y,
             left : snapshot.val().dancer[i].x,
             radius: 16,
@@ -35,41 +51,48 @@ database.ref("/").on('value', function(snapshot){
             lockRotation: true,
             id: i
         });
-        canvas.add(temp);
+        canvas.add(dancers[i]);
     }
+    
     $("#dancerCount").html("Dancers: " + dancerCount); 
 });
 
-var canvas = new fabric.Canvas('canvas', {
-    selectionLineWidth: 2,
-    selectionColor: 'rgba(0,0,0,0.3)',
-    backgroundColor: 'black',
-    left: 500,
-    hasControls: false
-    
+database.ref("/").on('value', function(snapshot){
+    if(dancerCount > 0){
+        dancerCount = parseInt(snapshot.val().dancerCount);
+        for(var i = 1; i <= dancerCount; i++){
+            if(dancers[i] == null){
+                dancers[i] = new fabric.Circle({
+                    top : snapshot.val().dancer[i].y,
+                    left : snapshot.val().dancer[i].x,
+                    radius: 16,
+                    fill : 'white',
+                    borderColor: '#91ff9e', 
+                    hasControls: false,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockRotation: true,
+                    id: i
+                });
+                canvas.add(dancers[i]);
+            }
+            else {
+                dancers[i].top = snapshot.val().dancer[i].y;
+                dancers[i].left = snapshot.val().dancer[i].x;
+            }
+        }
+        $("#dancerCount").html("Dancers: " + dancerCount); 
+        canvas.renderAll();
+    }
 });
 
-var grid = 32;
-
-// create grid
-
-for (var i = 0; i < ((1024 + grid) / grid); i++) {
-    
-    canvas.add(new fabric.Line([ i * grid, 0, i * grid, 512], { stroke: '#919191', selectable: false, evented: false }));
-    
-    if(i <= 512/grid) {
-    canvas.add(new fabric.Line([ 0, i * grid, 1024, i * grid], { stroke: '#919191', selectable: false, evented: false }));
-    }
-}
-
-// function to add dancers, called by button
-
+// function to add dancers to both database and canvas, called by button
 function addDancer() {
     
     var amount = $("#amount").val();
     for(var i = 0; i < amount; i++) {
         var id = dancerCount + i + 1;
-        var temp = new fabric.Circle({
+        dancers[dancerCount + i + 1] = new fabric.Circle({
             top : 0,
             left : i*grid,
             radius: 16,
@@ -85,7 +108,8 @@ function addDancer() {
             x: i*grid,
             y: 0,
         });
-        canvas.add(temp);
+        canvas.add(dancers[dancerCount + i + 1]);
+        
     }
     dancerCount += parseInt(amount);
     database.ref("dancerCount").set(dancerCount);
