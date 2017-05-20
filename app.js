@@ -6,6 +6,8 @@ var config = {
     messagingSenderId: "666535513846"
 };
 
+var currentFormation = "A/";
+
 var dancerCount = 0;
 
 var dancers = new Array();
@@ -36,12 +38,12 @@ var database = firebase.database();
 
 
 // initial pull of all dancers
-database.ref("/").once('value', function(snapshot){
+database.ref("/A/").once('value', function(snapshot){
     dancerCount = parseInt(snapshot.val().dancerCount);
     for(var i = 1; i <= dancerCount; i++){
         dancers[i] = new fabric.Circle({
-            top : snapshot.val().dancer[i].y,
-            left : snapshot.val().dancer[i].x,
+            top : snapshot.val()[i].y,
+            left : snapshot.val()[i].x,
             radius: 16,
             fill : 'white',
             borderColor: '#91ff9e', 
@@ -57,14 +59,14 @@ database.ref("/").once('value', function(snapshot){
     $("#dancerCount").html("Dancers: " + dancerCount); 
 });
 
-database.ref("/").on('value', function(snapshot){
+database.ref("/" + currentFormation + "/").on('value', function(snapshot){
     if(dancerCount > 0){
         dancerCount = parseInt(snapshot.val().dancerCount);
         for(var i = 1; i <= dancerCount; i++){
             if(dancers[i] == null){
                 dancers[i] = new fabric.Circle({
-                    top : snapshot.val().dancer[i].y,
-                    left : snapshot.val().dancer[i].x,
+                    top : snapshot.val()[i].y,
+                    left : snapshot.val()[i].x,
                     radius: 16,
                     fill : 'white',
                     borderColor: '#91ff9e', 
@@ -77,8 +79,8 @@ database.ref("/").on('value', function(snapshot){
                 canvas.add(dancers[i]);
             }
             else {
-                dancers[i].top = snapshot.val().dancer[i].y;
-                dancers[i].left = snapshot.val().dancer[i].x;
+                dancers[i].top = snapshot.val()[i].y;
+                dancers[i].left = snapshot.val()[i].x;
             }
         }
         $("#dancerCount").html("Dancers: " + dancerCount); 
@@ -104,7 +106,7 @@ function addDancer() {
             lockRotation: true,
             id: id
         });
-        database.ref("dancer/" + id).set({
+        database.ref(currentFormation + id).set({
             x: i*grid,
             y: 0,
         });
@@ -112,7 +114,7 @@ function addDancer() {
         
     }
     dancerCount += parseInt(amount);
-    database.ref("dancerCount").set(dancerCount);
+    database.ref(currentFormation + "/dancerCount").set(dancerCount);
     $("#dancerCount").html("Dancers: " + dancerCount); 
 }
 
@@ -145,7 +147,7 @@ canvas.on({
         if (e.target) {
             e.target.opacity = 1;
             canvas.renderAll();
-            database.ref("dancer/" + e.target.id).set({
+            database.ref(currentFormation + e.target.id).set({
                 x: e.target.left,
                 y: e.target.top
             });
