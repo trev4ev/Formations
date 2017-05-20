@@ -9,3 +9,13 @@ body {
     margin-top: 5vh;
     margin-bottom: 5vh;
 }
+
+h4 {
+    display: inline-block; 
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+
+#labels {
+    display: block;
+}

@@ -5,11 +5,13 @@
         <link rel="stylesheet" type="text/css" href="main.css">
     </head>
     <body>
-        <canvas id="canvas" width="1025" height="513"></canvas>
+        <canvas id="canvas" width="1025" height="449"></canvas>
         <input id = "amount" value = "1">
         <button onclick="addDancer()">Add Dancers</button>
-        <h4 id = "dancerCount">Dancers: 0</h4>
-        <button onclick="addFormation()">Add Formation</button>
+        <div id = labels>
+            <h4 id = "dancerCount">Dancers: 0</h4>
+            <h4 id = "currentFormation">Formation: 1 of 1</h4>
+        </div>
         <button onclick="previousFormation()">Previous Formation</button>
         <button onclick="nextFormation()">Next Formation</button>
         
