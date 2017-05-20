@@ -40,72 +40,54 @@ var database = firebase.database();
 
 database.ref("/").once('value', function(snapshot){
     maxFormation = parseInt(snapshot.val().maxFormation);
+    dancerCount = parseInt(snapshot.val().dancerCount);
     pullDancers(1);
 });
 
 // initial pull of all dancers
 function pullDancers(formation){
-    database.ref("/"+formation+"/").once('value', function(snapshot){
-        dancerCount = parseInt(snapshot.val().dancerCount);
-        for(var i = 1; i <= dancerCount; i++){
-            if(dancers[i] == null){
-                dancers[i] = new fabric.Circle({
-                    top : snapshot.val()[i].y,
-                    left : snapshot.val()[i].x,
-                    radius: 16,
-                    fill : 'white',
-                    borderColor: '#91ff9e', 
-                    hasControls: false,
-                    lockScalingX: true,
-                    lockScalingY: true,
-                    lockRotation: true,
-                    id: i
-                });
-                canvas.add(dancers[i]);
-            }
-            else {
-                dancers[i].setTop(snapshot.val()[i].y);
-                dancers[i].setLeft(snapshot.val()[i].x);
-                dancers[i].setCoords()
-            }
-        }
+    database.ref("/"+formation+"/").once('value', drawDancers);
+}
 
-        $("#dancerCount").html("Dancers: " + dancerCount);
-        $("#currentFormation").html("Formation: " + currentFormation + " of " + maxFormation);
-        canvas.renderAll();
-    });
+function drawDancers(snapshot) {
+    for(var i = 1; i <= dancerCount; i++){
+        if(dancers[i] == null){
+            dancers[i] = new fabric.Circle({
+                top : snapshot.val()[i].y,
+                left : snapshot.val()[i].x,
+                radius: 16,
+                fill : 'white',
+                borderColor: '#91ff9e', 
+                hasControls: false,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true,
+                id: i
+            });
+            canvas.add(dancers[i]);
+        }
+        else {
+            dancers[i].animate('top', snapshot.val()[i].y, {
+                duration: 500,
+                onChange: canvas.renderAll.bind(canvas),
+                easing: fabric.util.ease['easeInOutQuad']
+            });
+            dancers[i].animate('left', snapshot.val()[i].x, {
+                duration: 500,
+                onChange: canvas.renderAll.bind(canvas),
+                easing: fabric.util.ease['easeInOutQuad']
+            });
+            dancers[i].setCoords()
+        }
+    }
+
+    $("#dancerCount").html("Dancers: " + dancerCount);
+    $("#currentFormation").html("Formation: " + currentFormation + " of " + maxFormation);
+    canvas.renderAll();
 }
 
 // update the canvas when a change is made
-database.ref("/" + currentFormation + "/").on('value', function(snapshot){
-    if(dancerCount > 0){
-        dancerCount = parseInt(snapshot.val().dancerCount);
-        for(var i = 1; i <= dancerCount; i++){
-            if(dancers[i] == null){
-                dancers[i] = new fabric.Circle({
-                    top : snapshot.val()[i].y,
-                    left : snapshot.val()[i].x,
-                    radius: 16,
-                    fill : 'white',
-                    borderColor: '#91ff9e', 
-                    hasControls: false,
-                    lockScalingX: true,
-                    lockScalingY: true,
-                    lockRotation: true,
-                    id: i
-                });
-                canvas.add(dancers[i]);
-            }
-            else {
-                dancers[i].setTop(snapshot.val()[i].y);
-                dancers[i].setLeft(snapshot.val()[i].x);
-                dancers[i].setCoords()
-            }
-        }
-        $("#dancerCount").html("Dancers: " + dancerCount); 
-        canvas.renderAll();
-    }
-});
+database.ref("/" + currentFormation + "/").on('value', drawDancers);
 
 // function to add dancers to both database and canvas, called by button
 function addDancer() {
@@ -125,15 +107,18 @@ function addDancer() {
             lockRotation: true,
             id: id
         });
-        database.ref("/" + currentFormation + "/" + id ).set({
-            x: i*grid,
-            y: 0,
-        });
+        for(var j = 1; j <= maxFormation; j++){
+            database.ref("/" + j + "/" + id ).set({
+                x: i*grid,
+                y: 0,
+            });
+        }
+        
         canvas.add(dancers[dancerCount + i + 1]);
         
     }
     dancerCount += parseInt(amount);
-    database.ref("/" + currentFormation + "/dancerCount").set(dancerCount);
+    database.ref("/dancerCount").set(dancerCount);
     $("#dancerCount").html("Dancers: " + dancerCount); 
 }
 
