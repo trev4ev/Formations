@@ -92,6 +92,7 @@ database.ref("/" + currentFormation + "/").on('value', drawDancers);
 // function to add dancers to both database and canvas, called by button
 function addDancer() {
     
+    
     var amount = $("#amount").val();
     for(var i = 0; i < amount; i++) {
         var id = dancerCount + i + 1;
