@@ -12,10 +12,37 @@ body {
 
 h4 {
     display: inline-block; 
+    margin: 8px;
     margin-left: 2vw;
     margin-right: 2vw;
+    font-family: sans-serif;
+    font-weight: 200;
+    
 }
 
 #labels {
     display: block;
+}
+
+button {
+    padding: 8px;
+    padding-left: 11px;
+    padding-right: 11px;
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+    font-family: sans-serif;
+    font-weight: 200;
+}
+
+input {
+    padding: 8px;
+    padding-left: 11px;
+    padding-right: 11px;
+    background-color: white;
+    color: black;
+    border: 1px solid white;
+    width: 40px;
+    font-family: sans-serif;
+    font-weight: 200;
 }
