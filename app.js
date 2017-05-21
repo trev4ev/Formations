@@ -165,7 +165,9 @@ function nextFormation() {
         addFormation();
     }
     else {
+        database.ref("/" + currentFormation + "/").off();
         currentFormation++;
+        database.ref("/" + currentFormation + "/").on('value', drawDancers);
         pullDancers(currentFormation);
         $("#currentFormation").html("Formation: " + currentFormation + " of " + maxFormation);
     } 
@@ -174,7 +176,9 @@ function nextFormation() {
 
 function previousFormation() {
     if(currentFormation > 1) {
+        database.ref("/" + currentFormation + "/").off();
         currentFormation--;
+        database.ref("/" + currentFormation + "/").on('value', drawDancers);
         pullDancers(currentFormation);
         $("#currentFormation").html("Formation: " + currentFormation + " of " + maxFormation);
     }
