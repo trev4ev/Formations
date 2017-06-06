@@ -20,6 +20,9 @@ var canvas = new fabric.Canvas('canvas', {
     left: 500,
     hasControls: false
 });
+var isChoreographer = false;
+
+canvas.selection = false;
 
 // create grid
 for (var i = 0; i < ((1024 + grid) / grid); i++) {
@@ -35,23 +38,68 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 
-function loadFormation() {
+firebase.auth().signOut().then(function() {
+}).catch(function(error) {
+});
+
+function loadFormation(x) {
+    isChoreographer = x;
     id = $("#id").val();
-    if(id == "")
+    var email = $("#email").val();
+    var password = $("#password").val();
+    
+    if(id == "") {
+        alert("Please enter an ID");
         return;
-    database.ref("/"+id+"/").once('value', function(snapshot){
-        if(snapshot.val()==null){
-            alert("Not a valid formation ID");
+    }
+    
+    if(isChoreographer) {
+        if(email == "" || password == ""){
+            alert("Please enter email and password");
+            return;
         }
-        else{
-            $("#first").css("display","none");
-            $("#second").css("display","inherit");
-            maxFormation = parseInt(snapshot.val().maxFormation);
-            dancerCount = parseInt(snapshot.val().dancerCount);
-            pullDancers(1);
-            drawCanvas(id);
-        }
-    });
+        firebase.auth().signInWithEmailAndPassword(email, password).then(function(){
+            database.ref("/"+id+"/").once('value', function(snapshot){
+                if(snapshot.val()==null){
+                    alert("Not a valid formation ID");
+                }
+                else{
+                    $("#first").css("display","none");
+                    $("#second").css("display","inherit");
+                    if(!isChoreographer){
+                        $("#choreographer").css("display","none");
+                    }
+                    maxFormation = parseInt(snapshot.val().maxFormation);
+                    dancerCount = parseInt(snapshot.val().dancerCount);
+                    pullDancers(1);
+                    drawCanvas(id);
+                }
+            })
+        }).catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            alert(errorMessage);
+            return;
+        });
+    }
+    if(!isChoreographer){
+        database.ref("/"+id+"/").once('value', function(snapshot){
+            if(snapshot.val()==null){
+                alert("Not a valid formation ID");
+            }
+            else{
+                $("#first").css("display","none");
+                $("#second").css("display","inherit");
+                if(!isChoreographer){
+                    $("#choreographer").css("display","none");
+                }
+                maxFormation = parseInt(snapshot.val().maxFormation);
+                dancerCount = parseInt(snapshot.val().dancerCount);
+                pullDancers(1);
+                drawCanvas(id);
+            }
+        });
+    }
     
 }
 
@@ -78,14 +126,14 @@ function drawCanvas(id) {
         },
 
         'mouse:down': function(e) {
-            if (e.target) {
+            if (e.target && isChoreographer) {
                 e.target.opacity = 0.5;
                 canvas.renderAll();
             }
         },
 
         'mouse:up': function(e) {
-            if (e.target) {
+            if (e.target && isChoreographer) {
                 e.target.opacity = 1;
                 canvas.renderAll();
                 database.ref("/" + id + "/" + currentFormation + "/" + e.target.id).set({
@@ -133,7 +181,8 @@ function drawDancers(snapshot) {
             dancers[i] = new fabric.Group([circle, text], {
                 top : snapshot.val()[i].y,
                 left : snapshot.val()[i].x,
-                borderColor: '#91ff9e', 
+                selectable: isChoreographer,
+                borderColor: '#ffffff', 
                 hasControls: false,
                 lockScalingX: true,
                 lockScalingY: true,
@@ -194,7 +243,8 @@ function addDancer() {
         dancers[t] = new fabric.Group([circle, text], {
             top : 0,
             left : i*grid,
-            borderColor: '#91ff9e', 
+            borderColor: '#ffffff', 
+            selectable: isChoreographer,
             hasControls: false,
             lockScalingX: true,
             lockScalingY: true,
@@ -227,7 +277,6 @@ function nextFormation() {
         pullDancers(currentFormation);
         $("#currentFormation").html("Formation: " + currentFormation + " of " + maxFormation);
     } 
-    console.log(dancers);
 }
 
 function previousFormation() {
