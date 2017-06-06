@@ -35,6 +35,11 @@ button {
     font-weight: 200;
 }
 
+button:hover {
+    color: black;
+    background-color: white;
+}
+
 input {
     padding: 8px;
     padding-left: 11px;
@@ -47,10 +52,18 @@ input {
     font-weight: 200;
 }
 
+.login {
+    display: block;
+    width: 140px;
+    margin: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
 #second {
     display: none;
 }
 
 #first {
-    margin-top: 40vh;
+    margin-top: 32vh;
 }
