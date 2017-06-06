@@ -12,6 +12,7 @@ var maxFormation = 1;
 var dancerCount = 0;
 var grid = 32;
 var dancers = new Array();
+var labels = new Array();
 var canvas = new fabric.Canvas('canvas', {
     selectionLineWidth: 2,
     selectionColor: 'rgba(0,0,0,0.3)',
@@ -23,10 +24,10 @@ var canvas = new fabric.Canvas('canvas', {
 // create grid
 for (var i = 0; i < ((1024 + grid) / grid); i++) {
 
-    canvas.add(new fabric.Line([ i * grid, 0, i * grid, 448], { stroke: '#919191', selectable: false, evented: false }));
+    canvas.add(new fabric.Line([ i * grid, 0, i * grid, 448], { stroke: '#4b4b4b', selectable: false, evented: false }));
 
     if(i <= 448/grid) {
-    canvas.add(new fabric.Line([ 0, i * grid, 1024, i * grid], { stroke: '#919191', selectable: false, evented: false }));
+    canvas.add(new fabric.Line([ 0, i * grid, 1024, i * grid], { stroke: '#4b4b4b', selectable: false, evented: false }));
     }
 }
 
@@ -105,18 +106,40 @@ function pullDancers(formation){
 function drawDancers(snapshot) {
     for(var i = 1; i <= dancerCount; i++){
         if(dancers[i] == null){
-            dancers[i] = new fabric.Circle({
-                top : snapshot.val()[i].y,
-                left : snapshot.val()[i].x,
+            var circle = new fabric.Circle({
                 radius: 16,
                 fill : 'white',
+                hasControls: false,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true,
+                selectable: false,
+                originX: 'center',
+                originY: 'center',             
+            });
+            var text = new fabric.Text(i.toString(), {
+                textAlign: 'center',
+                originX: 'center',
+                originY: 'center',
+                fontSize: 14,
+                fontFamily: 'sans-serif',
+                hasControls: false,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true,
+                selectable: false,
+                evented: false,
+            });
+            dancers[i] = new fabric.Group([circle, text], {
+                top : snapshot.val()[i].y,
+                left : snapshot.val()[i].x,
                 borderColor: '#91ff9e', 
                 hasControls: false,
                 lockScalingX: true,
                 lockScalingY: true,
                 lockRotation: true,
                 id: i
-            });
+            })
             canvas.add(dancers[i]);
         }
         else {
@@ -141,22 +164,43 @@ function drawDancers(snapshot) {
 
 // function to add dancers to both database and canvas, called by button
 function addDancer() {
-    
     var amount = $("#amount").val();
     for(var i = 0; i < amount; i++) {
         var t = dancerCount + i + 1;
-        dancers[dancerCount + i + 1] = new fabric.Circle({
-            top : 0,
-            left : i*grid,
+        var circle = new fabric.Circle({
             radius: 16,
             fill : 'white',
+            hasControls: false,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockRotation: true,
+            selectable: false,
+            originX: 'center',
+            originY: 'center',             
+        });
+        var text = new fabric.Text(t.toString(), {
+            textAlign: 'center',
+            originX: 'center',
+            originY: 'center',
+            fontSize: 14,
+            fontFamily: 'sans-serif',
+            hasControls: false,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockRotation: true,
+            selectable: false,
+            evented: false,
+        });
+        dancers[t] = new fabric.Group([circle, text], {
+            top : 0,
+            left : i*grid,
             borderColor: '#91ff9e', 
             hasControls: false,
             lockScalingX: true,
             lockScalingY: true,
             lockRotation: true,
             id: t
-        });
+        })
         for(var j = 1; j <= maxFormation; j++){
             database.ref("/" + id + "/" + j + "/" + t ).set({
                 x: i*grid,
@@ -164,7 +208,7 @@ function addDancer() {
             });
         }
         
-        canvas.add(dancers[dancerCount + i + 1]);
+        canvas.add(dancers[t]);
         
     }
     dancerCount += parseInt(amount);
