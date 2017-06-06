@@ -5,16 +5,21 @@
         <link rel="stylesheet" type="text/css" href="main.css">
     </head>
     <body>
-        <canvas id="canvas" width="1025" height="449"></canvas>
-        <input id = "amount" value = "1">
-        <button onclick="addDancer()">Add Dancers</button>
-        <div id = labels>
-            <h4 id = "dancerCount">Dancers: 0</h4>
-            <h4 id = "currentFormation">Formation: 1 of 1</h4>
+        <div id = "first">
+            <input id = "id" placeholder = "ID">
+            <button onclick="loadFormation()">Load Formation</button>
         </div>
-        <button onclick="previousFormation()">Previous Formation</button>
-        <button onclick="nextFormation()">Next Formation</button>
-        
+        <div id = "second">
+            <canvas id="canvas" width="1025" height="449"></canvas>
+            <input id = "amount" value = "1">
+            <button onclick="addDancer()">Add Dancers</button>
+            <div id = labels>
+                <h4 id = "dancerCount">Dancers: 0</h4>
+                <h4 id = "currentFormation">Formation: 1 of 1</h4>
+            </div>
+            <button onclick="previousFormation()">Previous Formation</button>
+            <button onclick="nextFormation()">Next Formation</button>
+        </div>
         <script src="bower_components/fabric.js/dist/fabric.js"></script>
         <script src="jquery-3.1.1.min.js"></script>
         
