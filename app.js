@@ -12,7 +12,6 @@ var maxFormation = 1;
 var dancerCount = 0;
 var grid = 32;
 var dancers = new Array();
-var labels = new Array();
 var canvas = new fabric.Canvas('canvas', {
     selectionLineWidth: 2,
     selectionColor: 'rgba(0,0,0,0.3)',
@@ -21,8 +20,11 @@ var canvas = new fabric.Canvas('canvas', {
     hasControls: false
 });
 var isChoreographer = false;
+var selected;
 
 canvas.selection = false;
+
+$('<input/>').attr({ type: 'text', id: 'name', autocomplete: 'off'}).appendTo('.canvas-container');
 
 // create grid
 for (var i = 0; i < ((1024 + grid) / grid); i++) {
@@ -126,9 +128,39 @@ function drawCanvas(id) {
         },
 
         'mouse:down': function(e) {
-            if (e.target && isChoreographer) {
-                e.target.opacity = 0.5;
+            if(selected != null) {
+                var name = selected.item(2).clone();
+                name.set({
+                    text: $("#name").val(),
+                    left: selected.getLeft(),
+                    top: selected.getTop() + 32,
+                    originX: 'center',
+                    originY: 'top'
+                });
+                database.ref("/" + id + "/" + currentFormation + "/" + selected.id ).set({
+                    x: selected.getLeft(),
+                    y: selected.getTop(),
+                    name: $("#name").val()
+                });
+                selected.remove(selected.item(2));
+                selected.addWithUpdate(name);
+                selected.set({
+                    name: $("#name").val()
+                })
                 canvas.renderAll();
+                selected = null;
+                $("#name").val("");
+            }
+            $("#name").css("display","none");
+            if (e.target && isChoreographer) {
+                if(e.e.shiftKey){
+                    addName(e.target);
+                }
+                else {
+                    e.target.opacity = 0.5;
+                    canvas.renderAll();
+                }
+                
             }
         },
 
@@ -138,12 +170,24 @@ function drawCanvas(id) {
                 canvas.renderAll();
                 database.ref("/" + id + "/" + currentFormation + "/" + e.target.id).set({
                     x: e.target.left,
-                    y: e.target.top
+                    y: e.target.top,
+                    name: e.target.name
                 });
             }
         },
 
     });
+}
+
+function addName(target) {
+    selected = target;
+    var nameText = selected.item(2).text;
+    $("#name").val(nameText);
+    $("#name").css("display","inherit");
+    $("#name").css("top", target.getTop() + 34);
+    $("#name").css("left", target.getLeft() - 25);
+    
+    
 }
 
 // initial pull of all dancers
@@ -178,7 +222,22 @@ function drawDancers(snapshot) {
                 selectable: false,
                 evented: false,
             });
-            dancers[i] = new fabric.Group([circle, text], {
+            var name = new fabric.Text(snapshot.val()[i].name, {
+                textAlign: 'center',
+                originX: 'center',
+                originY: 'top',
+                top: 16,
+                fill: 'white',
+                fontSize: 14,
+                fontFamily: 'sans-serif',
+                hasControls: false,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true,
+                selectable: false,
+                evented: false,
+            });
+            dancers[i] = new fabric.Group([circle, text, name], {
                 top : snapshot.val()[i].y,
                 left : snapshot.val()[i].x,
                 selectable: isChoreographer,
@@ -187,18 +246,20 @@ function drawDancers(snapshot) {
                 lockScalingX: true,
                 lockScalingY: true,
                 lockRotation: true,
-                id: i
-            })
+                id: i,
+                originX: 'center',
+                name: ""
+            });
             canvas.add(dancers[i]);
         }
         else {
             dancers[i].animate('top', snapshot.val()[i].y, {
-                duration: 500,
+                duration: 700,
                 onChange: canvas.renderAll.bind(canvas),
                 easing: fabric.util.ease['easeInOutQuad']
             });
             dancers[i].animate('left', snapshot.val()[i].x, {
-                duration: 500,
+                duration: 700,
                 onChange: canvas.renderAll.bind(canvas),
                 easing: fabric.util.ease['easeInOutQuad']
             });
@@ -240,21 +301,39 @@ function addDancer() {
             selectable: false,
             evented: false,
         });
-        dancers[t] = new fabric.Group([circle, text], {
+        var name = new fabric.Text("", {
+            textAlign: 'center',
+            originX: 'center',
+            originY: 'top',
+            top: 16,
+            fill: 'white',
+            fontSize: 14,
+            fontFamily: 'sans-serif',
+            hasControls: false,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockRotation: true,
+            selectable: false,
+            evented: false,
+        });
+        dancers[t] = new fabric.Group([circle, text, name], {
             top : 0,
-            left : i*grid,
+            left : i*grid + 16,
             borderColor: '#ffffff', 
             selectable: isChoreographer,
             hasControls: false,
             lockScalingX: true,
             lockScalingY: true,
             lockRotation: true,
-            id: t
-        })
+            originX: 'center',
+            id: t,
+            name: ""
+        });
         for(var j = 1; j <= maxFormation; j++){
             database.ref("/" + id + "/" + j + "/" + t ).set({
-                x: i*grid,
+                x: i*grid + 16,
                 y: 0,
+                name: ""
             });
         }
         
@@ -268,7 +347,8 @@ function addDancer() {
 
 function nextFormation() {
     if(currentFormation == maxFormation){
-        addFormation();
+        if(isChoreographer)
+            addFormation();
     }
     else {
         database.ref("/" + id + "/" + currentFormation + "/").off();
