@@ -60,6 +60,16 @@ input {
     margin-bottom: 8px;
 }
 
+#name {
+    position: absolute;
+    z-index: 1;
+    display: none;
+    padding: 0;
+    font-size: 14px;
+    text-align: center;
+    width: 50px;
+}
+
 #second {
     display: none;
 }
