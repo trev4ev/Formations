@@ -255,7 +255,6 @@ function drawDancers(snapshot) {
         else {
             dancers[i].animate('top', snapshot.val()[i].y, {
                 duration: 700,
-                onChange: canvas.renderAll.bind(canvas),
                 easing: fabric.util.ease['easeInOutQuad']
             });
             dancers[i].animate('left', snapshot.val()[i].x, {
