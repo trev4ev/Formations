@@ -17,7 +17,8 @@ var canvas = new fabric.Canvas('canvas', {
     selectionColor: 'rgba(0,0,0,0.3)',
     backgroundColor: 'black',
     left: 500,
-    hasControls: false
+    hasControls: false,
+    allowTouchScrolling: true
 });
 var isChoreographer = false;
 var selected;
