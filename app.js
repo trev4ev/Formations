@@ -74,6 +74,7 @@ function loadFormation(x) {
                     }
                     maxFormation = parseInt(snapshot.val().maxFormation);
                     dancerCount = parseInt(snapshot.val().dancerCount);
+                    canvas.allowTouchScrolling = false;
                     pullDancers(1);
                     drawCanvas(id);
                 }
