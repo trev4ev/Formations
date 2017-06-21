@@ -250,7 +250,7 @@ function drawDancers(snapshot) {
                 lockRotation: true,
                 id: i,
                 originX: 'center',
-                name: ""
+                name: snapshot.val()[i].name
             });
             canvas.add(dancers[i]);
         }
