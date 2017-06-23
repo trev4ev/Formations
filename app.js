@@ -22,6 +22,8 @@ var canvas = new fabric.Canvas('canvas', {
 });
 var isChoreographer = false;
 var selected;
+var width = 1025;
+var height = 449;
 
 canvas.selection = false;
 
@@ -276,6 +278,8 @@ function drawDancers(snapshot) {
 // function to add dancers to both database and canvas, called by button
 function addDancer() {
     var amount = $("#amount").val();
+    var y = 0;
+    var xOffset = 0;
     for(var i = 0; i < amount; i++) {
         var t = dancerCount + i + 1;
         var circle = new fabric.Circle({
@@ -317,9 +321,11 @@ function addDancer() {
             selectable: false,
             evented: false,
         });
+        y = grid * Math.floor((i*grid+16)/width);
+        xOffset = width * (Math.floor((i*grid+16)/width));
         dancers[t] = new fabric.Group([circle, text, name], {
-            top : 0,
-            left : i*grid + 16,
+            top : y,
+            left : i*grid + 16 - xOffset,
             borderColor: '#ffffff', 
             selectable: isChoreographer,
             hasControls: false,
@@ -332,8 +338,8 @@ function addDancer() {
         });
         for(var j = 1; j <= maxFormation; j++){
             database.ref("/" + id + "/" + j + "/" + t ).set({
-                x: i*grid + 16,
-                y: 0,
+                x: i*grid + 16 - xOffset,
+                y: y,
                 name: ""
             });
         }
