@@ -18,7 +18,8 @@ var canvas = new fabric.Canvas('canvas', {
     backgroundColor: 'black',
     left: 500,
     hasControls: false,
-    allowTouchScrolling: true
+    allowTouchScrolling: true,
+    renderOnAddRemove: false
 });
 var isChoreographer = false;
 var selected;
@@ -257,15 +258,27 @@ function drawDancers(snapshot) {
             canvas.add(dancers[i]);
         }
         else {
-            dancers[i].animate('top', snapshot.val()[i].y, {
-                duration: 700,
-                easing: fabric.util.ease['easeInOutQuad']
-            });
-            dancers[i].animate('left', snapshot.val()[i].x, {
-                duration: 700,
-                onChange: canvas.renderAll.bind(canvas),
-                easing: fabric.util.ease['easeInOutQuad']
-            });
+            if(i == dancerCount){
+                dancers[i].animate('top', snapshot.val()[i].y, {
+                    duration: 700,
+                    easing: fabric.util.ease['easeInOutQuad']
+                });
+                dancers[i].animate('left', snapshot.val()[i].x, {
+                    duration: 700,
+                    onChange: canvas.renderAll.bind(canvas),
+                    easing: fabric.util.ease['easeInOutQuad']
+                });
+            }
+            else {
+                dancers[i].animate('top', snapshot.val()[i].y, {
+                    duration: 700,
+                    easing: fabric.util.ease['easeInOutQuad']
+                });
+                dancers[i].animate('left', snapshot.val()[i].x, {
+                    duration: 700,
+                    easing: fabric.util.ease['easeInOutQuad']
+                });
+            }
             dancers[i].setCoords()
         }
     }
