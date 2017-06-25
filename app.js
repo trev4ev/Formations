@@ -360,6 +360,7 @@ function addDancer() {
         canvas.add(dancers[t]);
         
     }
+    canvas.renderAll();
     dancerCount += parseInt(amount);
     database.ref("/" + id + "/dancerCount").set(dancerCount);
     $("#dancerCount").html("Dancers: " + dancerCount); 
