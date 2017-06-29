@@ -63,13 +63,12 @@ window.onkeyup = function(e) {
                 dancers[removedID].item(1).setText(removedID+"");
                 dancers[removedID].id = removedID;
                 dancerCount--;
-                database.ref("/" + id + "/" + currentFormation + "/" + removedID ).set({
-                    x: dancers[dancerCount+1].left,
-                    y: dancers[dancerCount+1].top,
-                    name: dancers[dancerCount+1].name
-                });
                 var removedDancer = dancerCount + 1;
-                database.ref("/" + id + "/" + currentFormation + "/" + removedDancer).remove();          
+                for(var j = 1; j <= maxFormation; j++) {
+                    replaceDancer(j, removedID, removedDancer);
+                    
+                }
+     
                 database.ref("/" + id + "/dancerCount").set(dancerCount);
                 dancers[dancerCount+1] = null;
                 $("#dancerCount").html("Dancers: " + dancerCount);
@@ -80,6 +79,17 @@ window.onkeyup = function(e) {
         }
     }
     
+}
+
+function replaceDancer(j, removedID, removedDancer){
+    database.ref("/" + id + "/" + j + "/" + removedDancer).once('value', function(snapshot){
+        database.ref("/" + id + "/" + j + "/" + removedID).set({
+            x: snapshot.val().x,
+            y: snapshot.val().y,
+            name: snapshot.val().name
+        });
+        database.ref("/" + id + "/" + j + "/" + removedDancer).remove(); 
+    });  
 }
 
 function loadFormation(x) {
@@ -237,9 +247,10 @@ function pullDancers(formation){
 
 function drawDancers(snapshot) {
     var oldDancerCount = dancerCount;
-    dancerCount = Object.keys(snapshot.val()).length;
+    if(snapshot.val() != null) {
+        dancerCount = Object.keys(snapshot.val()).length;
+    }
     if(oldDancerCount > dancerCount){
-        console.log("meh");
         canvas.remove(dancers[oldDancerCount]);    
         dancers[oldDancerCount] = null;
         canvas.renderAll();
