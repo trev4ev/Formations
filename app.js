@@ -40,6 +40,9 @@ for (var i = 0; i < ((1024 + grid) / grid); i++) {
     }
 }
 
+canvas.add(new fabric.Line([ 0, 7 * grid, 1024, 7 * grid], { stroke: '#005cba', selectable: false, evented: false }));
+canvas.add(new fabric.Line([ 16 * grid, 0, 16 * grid, 448], { stroke: '#005cba', selectable: false, evented: false }));
+
 firebase.initializeApp(config);
 
 var database = firebase.database();
@@ -47,6 +50,37 @@ var database = firebase.database();
 firebase.auth().signOut().then(function() {
 }).catch(function(error) {
 });
+
+window.onkeyup = function(e) {
+    if(isChoreographer && selected == null){
+        var code = e.which || e.keyCode || 0;
+        if(code == 8 || code == 46){
+            var activeObject = canvas.getActiveObject();
+            if(activeObject != null) {
+                database.ref("/" + id + "/" + currentFormation + "/").off();
+                var removedID = activeObject.id;
+                dancers[removedID] = dancers[dancerCount];   
+                dancers[removedID].item(1).setText(removedID+"");
+                dancers[removedID].id = removedID;
+                dancerCount--;
+                database.ref("/" + id + "/" + currentFormation + "/" + removedID ).set({
+                    x: dancers[dancerCount+1].left,
+                    y: dancers[dancerCount+1].top,
+                    name: dancers[dancerCount+1].name
+                });
+                var removedDancer = dancerCount + 1;
+                database.ref("/" + id + "/" + currentFormation + "/" + removedDancer).remove();          
+                database.ref("/" + id + "/dancerCount").set(dancerCount);
+                dancers[dancerCount+1] = null;
+                $("#dancerCount").html("Dancers: " + dancerCount);
+                canvas.remove(activeObject);
+                canvas.renderAll();
+                database.ref("/" + id + "/" + currentFormation + "/").on('value', drawDancers);
+            }
+        }
+    }
+    
+}
 
 function loadFormation(x) {
     isChoreographer = x;
@@ -198,9 +232,18 @@ function addName(target) {
 // initial pull of all dancers
 function pullDancers(formation){
     database.ref("/" + id + "/"+formation+"/").once('value', drawDancers);
+    
 }
 
 function drawDancers(snapshot) {
+    var oldDancerCount = dancerCount;
+    dancerCount = Object.keys(snapshot.val()).length;
+    if(oldDancerCount > dancerCount){
+        console.log("meh");
+        canvas.remove(dancers[oldDancerCount]);    
+        dancers[oldDancerCount] = null;
+        canvas.renderAll();
+    }
     for(var i = 1; i <= dancerCount; i++){
         if(dancers[i] == null){
             var circle = new fabric.Circle({
@@ -258,6 +301,9 @@ function drawDancers(snapshot) {
             canvas.add(dancers[i]);
         }
         else {
+            dancers[i].name = snapshot.val()[i].name;
+            dancers[i].item(2).setText(snapshot.val()[i].name);
+            dancers[i].addWithUpdate();
             if(i == dancerCount){
                 dancers[i].animate('top', snapshot.val()[i].y, {
                     duration: 700,
@@ -293,8 +339,12 @@ function addDancer() {
     var amount = $("#amount").val();
     var y = 0;
     var xOffset = 0;
+    var oldDancerCount = dancerCount;
+    dancerCount += parseInt(amount);
+    database.ref("/" + id + "/dancerCount").set(dancerCount);
+    
     for(var i = 0; i < amount; i++) {
-        var t = dancerCount + i + 1;
+        var t = oldDancerCount + i + 1;
         var circle = new fabric.Circle({
             radius: 16,
             fill : 'white',
@@ -361,8 +411,6 @@ function addDancer() {
         
     }
     canvas.renderAll();
-    dancerCount += parseInt(amount);
-    database.ref("/" + id + "/dancerCount").set(dancerCount);
     $("#dancerCount").html("Dancers: " + dancerCount); 
 }
 
