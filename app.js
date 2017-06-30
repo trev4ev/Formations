@@ -77,6 +77,12 @@ window.onkeyup = function(e) {
                 database.ref("/" + id + "/" + currentFormation + "/").on('value', drawDancers);
             }
         }
+        else if(code == 37){
+            previousFormation();
+        }
+        else if(code == 39){
+            nextFormation();
+        }
     }
     
 }
@@ -184,11 +190,12 @@ function drawCanvas(id) {
                     originX: 'center',
                     originY: 'top'
                 });
-                database.ref("/" + id + "/" + currentFormation + "/" + selected.id ).set({
-                    x: selected.getLeft(),
-                    y: selected.getTop(),
-                    name: $("#name").val()
-                });
+                for(var i = 1; i <= maxFormation; i++){
+                    database.ref("/" + id + "/" + i + "/" + selected.id ).update({
+                        name: $("#name").val()
+                    });
+                }
+                
                 selected.remove(selected.item(2));
                 selected.addWithUpdate(name);
                 selected.set({
