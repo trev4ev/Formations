@@ -77,6 +77,12 @@ window.onkeyup = function(e) {
                 database.ref("/" + id + "/" + currentFormation + "/").on('value', drawDancers);
             }
         }
+        else if(code == 37){
+            previousFormation();
+        }
+        else if(code == 39){
+            nextFormation();
+        }
     }
     
 }
@@ -116,9 +122,6 @@ function loadFormation(x) {
                 else{
                     $("#first").css("display","none");
                     $("#second").css("display","inherit");
-                    if(!isChoreographer){
-                        $("#choreographer").css("display","none");
-                    }
                     maxFormation = parseInt(snapshot.val().maxFormation);
                     dancerCount = parseInt(snapshot.val().dancerCount);
                     canvas.allowTouchScrolling = false;
@@ -143,6 +146,7 @@ function loadFormation(x) {
                 $("#second").css("display","inherit");
                 if(!isChoreographer){
                     $("#choreographer").css("display","none");
+                    $("#deleteFormation").css("display", "none");
                 }
                 maxFormation = parseInt(snapshot.val().maxFormation);
                 dancerCount = parseInt(snapshot.val().dancerCount);
@@ -186,11 +190,12 @@ function drawCanvas(id) {
                     originX: 'center',
                     originY: 'top'
                 });
-                database.ref("/" + id + "/" + currentFormation + "/" + selected.id ).set({
-                    x: selected.getLeft(),
-                    y: selected.getTop(),
-                    name: $("#name").val()
-                });
+                for(var i = 1; i <= maxFormation; i++){
+                    database.ref("/" + id + "/" + i + "/" + selected.id ).update({
+                        name: $("#name").val()
+                    });
+                }
+                
                 selected.remove(selected.item(2));
                 selected.addWithUpdate(name);
                 selected.set({
@@ -347,6 +352,7 @@ function drawDancers(snapshot) {
 
 // function to add dancers to both database and canvas, called by button
 function addDancer() {
+    if(!isChoreographer) return;
     var amount = $("#amount").val();
     var y = 0;
     var xOffset = 0;
@@ -458,4 +464,28 @@ function addFormation() {
     currentFormation++;
     database.ref("/" + id + "/maxFormation").set(maxFormation);
     $("#currentFormation").html("Formation: " + currentFormation + " of " + maxFormation);
+}
+
+function deleteFormation() {
+    if(maxFormation > 1){
+        database.ref("/" + id + "/" + currentFormation + "/").off();
+        if(currentFormation == maxFormation) {
+            database.ref("/" + id + "/" + currentFormation + "/").remove();
+        }
+        for(var i = currentFormation; i < maxFormation; i++) {
+            copyNextFormation(i);
+        }
+        if(currentFormation > 1) currentFormation--;
+        maxFormation--;
+        database.ref("/" + id + "/maxFormation/").set(maxFormation);
+        database.ref("/" + id + "/" + currentFormation + "/").on('value', drawDancers);
+    }
+}
+
+function copyNextFormation(i){
+    var next = i+1;
+    database.ref("/" + id + "/" + next + "/").once('value', function(snapshot){
+        database.ref("/" + id + "/" + i + "/" ).set(snapshot.val());
+        database.ref("/" + id + "/" + next + "/").remove();
+    });
 }
