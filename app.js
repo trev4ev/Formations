@@ -52,8 +52,8 @@ firebase.auth().signOut().then(function() {
 });
 
 window.onkeyup = function(e) {
-    if(isChoreographer && selected == null){
-        var code = e.which || e.keyCode || 0;
+    var code = e.which || e.keyCode || 0;
+    if(isChoreographer && selected == null){        
         if(code == 8 || code == 46){
             var activeObject = canvas.getActiveObject();
             if(activeObject != null) {
@@ -77,14 +77,13 @@ window.onkeyup = function(e) {
                 database.ref("/" + id + "/" + currentFormation + "/").on('value', drawDancers);
             }
         }
-        else if(code == 37){
-            previousFormation();
-        }
-        else if(code == 39){
-            nextFormation();
-        }
     }
-    
+    if(code == 37){
+        previousFormation();
+    }
+    else if(code == 39){
+        nextFormation();
+    }
 }
 
 function replaceDancer(j, removedID, removedDancer){
@@ -166,11 +165,15 @@ function drawCanvas(id) {
     // events triggered
     canvas.on({
 
-        'object:moving': function(options) { 
-            options.target.set({
-                left: Math.round(options.target.left / (grid/2)) * (grid/2),
-                top: Math.round(options.target.top / (grid/2)) * (grid/2)
+        'object:moving': function(e) { 
+            e.target.set({
+                left: Math.round(e.target.left / (grid/2)) * (grid/2),
+                top: Math.round(e.target.top / (grid/2)) * (grid/2)
             });
+            if(e.target.top < 0) e.target.top = 0;
+            if(e.target.left < grid/2) e.target.left = grid/2;
+            if(e.target.top > height - grid - 1) e.target.top = height - grid - 1;
+            if(e.target.left > width - 1 - grid/2) e.target.left = width - 1 - grid/2;
         },
 
         'selection:created': function(e) {
@@ -239,9 +242,7 @@ function addName(target) {
     $("#name").val(nameText);
     $("#name").css("display","inherit");
     $("#name").css("top", target.getTop() + 34);
-    $("#name").css("left", target.getLeft() - 25);
-    
-    
+    $("#name").css("left", target.getLeft() - 25);        
 }
 
 // initial pull of all dancers
