@@ -25,6 +25,7 @@ var isChoreographer = false;
 var selected;
 var width = 1025;
 var height = 449;
+var namesVisible = true;
 
 canvas.selection = false;
 
@@ -84,6 +85,15 @@ window.onkeyup = function(e) {
     else if(code == 39){
         nextFormation();
     }
+}
+
+function updateNamesVisible(checkbox) {
+    namesVisible = checkbox.checked;
+    for(var i = 1; i <= dancerCount; i++) {
+        dancers[i].item(2).visible = checkbox.checked;
+        dancers[i].addWithUpdate();
+    }
+    canvas.renderAll();
 }
 
 function replaceDancer(j, removedID, removedDancer){
@@ -265,7 +275,9 @@ function drawDancers(snapshot) {
         if(dancers[i] == null){
             var circle = new fabric.Circle({
                 radius: 16,
-                fill : 'white',
+                fill : 'rgba(255, 255, 255, 0.2)',
+                stroke: 'white',
+                strokeWidth: 2,
                 hasControls: false,
                 lockScalingX: true,
                 lockScalingY: true,
@@ -286,6 +298,7 @@ function drawDancers(snapshot) {
                 lockRotation: true,
                 selectable: false,
                 evented: false,
+                fill: 'white'
             });
             var name = new fabric.Text(snapshot.val()[i].name, {
                 textAlign: 'center',
@@ -301,6 +314,7 @@ function drawDancers(snapshot) {
                 lockRotation: true,
                 selectable: false,
                 evented: false,
+                visible: namesVisible,
             });
             dancers[i] = new fabric.Group([circle, text, name], {
                 top : snapshot.val()[i].y,
@@ -342,7 +356,7 @@ function drawDancers(snapshot) {
                     easing: fabric.util.ease['easeInOutQuad']
                 });
             }
-            dancers[i].setCoords()
+            dancers[i].setCoords();
         }
     }
 
@@ -365,7 +379,9 @@ function addDancer() {
         var t = oldDancerCount + i + 1;
         var circle = new fabric.Circle({
             radius: 16,
-            fill : 'white',
+            fill : 'rgba(255, 255, 255, 0.2)',
+            stroke: 'white',
+            strokeWidth: 2,
             hasControls: false,
             lockScalingX: true,
             lockScalingY: true,
@@ -379,6 +395,7 @@ function addDancer() {
             originX: 'center',
             originY: 'center',
             fontSize: 14,
+            fill: 'white',
             fontFamily: 'sans-serif',
             hasControls: false,
             lockScalingX: true,
@@ -401,6 +418,7 @@ function addDancer() {
             lockRotation: true,
             selectable: false,
             evented: false,
+            visible: namesVisible,
         });
         y = grid * Math.floor((i*grid+16)/width);
         xOffset = width * (Math.floor((i*grid+16)/width));
