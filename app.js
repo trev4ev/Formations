@@ -25,6 +25,7 @@ var isChoreographer = false;
 var selected;
 var width = 1025;
 var height = 449;
+var namesVisible = true;
 
 canvas.selection = false;
 
@@ -52,8 +53,8 @@ firebase.auth().signOut().then(function() {
 });
 
 window.onkeyup = function(e) {
-    if(isChoreographer && selected == null){
-        var code = e.which || e.keyCode || 0;
+    var code = e.which || e.keyCode || 0;
+    if(isChoreographer && selected == null){        
         if(code == 8 || code == 46){
             var activeObject = canvas.getActiveObject();
             if(activeObject != null) {
@@ -77,14 +78,22 @@ window.onkeyup = function(e) {
                 database.ref("/" + id + "/" + currentFormation + "/").on('value', drawDancers);
             }
         }
-        else if(code == 37){
-            previousFormation();
-        }
-        else if(code == 39){
-            nextFormation();
-        }
     }
-    
+    if(code == 37){
+        previousFormation();
+    }
+    else if(code == 39){
+        nextFormation();
+    }
+}
+
+function updateNamesVisible(checkbox) {
+    namesVisible = checkbox.checked;
+    for(var i = 1; i <= dancerCount; i++) {
+        dancers[i].item(2).visible = checkbox.checked;
+        dancers[i].addWithUpdate();
+    }
+    canvas.renderAll();
 }
 
 function replaceDancer(j, removedID, removedDancer){
@@ -166,11 +175,15 @@ function drawCanvas(id) {
     // events triggered
     canvas.on({
 
-        'object:moving': function(options) { 
-            options.target.set({
-                left: Math.round(options.target.left / (grid/2)) * (grid/2),
-                top: Math.round(options.target.top / (grid/2)) * (grid/2)
+        'object:moving': function(e) { 
+            e.target.set({
+                left: Math.round(e.target.left / (grid/2)) * (grid/2),
+                top: Math.round(e.target.top / (grid/2)) * (grid/2)
             });
+            if(e.target.top < 0) e.target.top = 0;
+            if(e.target.left < grid/2) e.target.left = grid/2;
+            if(e.target.top > height - grid - 1) e.target.top = height - grid - 1;
+            if(e.target.left > width - 1 - grid/2) e.target.left = width - 1 - grid/2;
         },
 
         'selection:created': function(e) {
@@ -239,9 +252,7 @@ function addName(target) {
     $("#name").val(nameText);
     $("#name").css("display","inherit");
     $("#name").css("top", target.getTop() + 34);
-    $("#name").css("left", target.getLeft() - 25);
-    
-    
+    $("#name").css("left", target.getLeft() - 25);        
 }
 
 // initial pull of all dancers
@@ -264,7 +275,9 @@ function drawDancers(snapshot) {
         if(dancers[i] == null){
             var circle = new fabric.Circle({
                 radius: 16,
-                fill : 'white',
+                fill : 'rgba(255, 255, 255, 0.2)',
+                stroke: 'white',
+                strokeWidth: 2,
                 hasControls: false,
                 lockScalingX: true,
                 lockScalingY: true,
@@ -285,6 +298,7 @@ function drawDancers(snapshot) {
                 lockRotation: true,
                 selectable: false,
                 evented: false,
+                fill: 'white'
             });
             var name = new fabric.Text(snapshot.val()[i].name, {
                 textAlign: 'center',
@@ -300,6 +314,7 @@ function drawDancers(snapshot) {
                 lockRotation: true,
                 selectable: false,
                 evented: false,
+                visible: namesVisible,
             });
             dancers[i] = new fabric.Group([circle, text, name], {
                 top : snapshot.val()[i].y,
@@ -341,7 +356,7 @@ function drawDancers(snapshot) {
                     easing: fabric.util.ease['easeInOutQuad']
                 });
             }
-            dancers[i].setCoords()
+            dancers[i].setCoords();
         }
     }
 
@@ -364,7 +379,9 @@ function addDancer() {
         var t = oldDancerCount + i + 1;
         var circle = new fabric.Circle({
             radius: 16,
-            fill : 'white',
+            fill : 'rgba(255, 255, 255, 0.2)',
+            stroke: 'white',
+            strokeWidth: 2,
             hasControls: false,
             lockScalingX: true,
             lockScalingY: true,
@@ -378,6 +395,7 @@ function addDancer() {
             originX: 'center',
             originY: 'center',
             fontSize: 14,
+            fill: 'white',
             fontFamily: 'sans-serif',
             hasControls: false,
             lockScalingX: true,
@@ -400,6 +418,7 @@ function addDancer() {
             lockRotation: true,
             selectable: false,
             evented: false,
+            visible: namesVisible,
         });
         y = grid * Math.floor((i*grid+16)/width);
         xOffset = width * (Math.floor((i*grid+16)/width));
