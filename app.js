@@ -29,7 +29,12 @@ var namesVisible = true;
 
 canvas.selection = false;
 
-$('<input/>').attr({ type: 'text', id: 'name', autocomplete: 'off'}).appendTo('.canvas-container');
+$('<div></div>').attr({id: 'panel'}).appendTo('.canvas-container');
+$('<input/>').attr({ type: 'text', id: 'name', autocomplete: 'off'}).appendTo('#panel');
+$('<button></button').attr({class: 'colorChoice', id: 'white', onclick: 'setColor("white")'}).appendTo('#panel');
+$('<button></button').attr({class: 'colorChoice', id: 'green', onclick: 'setColor("#64ff64")'}).appendTo('#panel');
+$('<button></button').attr({class: 'colorChoice', id: 'blue', onclick: 'setColor("#4b90ff")'}).appendTo('#panel');
+$('<button></button').attr({class: 'colorChoice', id: 'red', onclick: 'setColor("#ff5555")'}).appendTo('#panel');
 
 // create grid
 for (var i = 0; i < ((1024 + grid) / grid); i++) {
@@ -87,6 +92,17 @@ window.onkeyup = function(e) {
     }
 }
 
+function setColor(colorName) {
+    if(selected != null){
+        selected.item(0).stroke = colorName;
+        database.ref("/" + id + "/" + currentFormation + "/" + selected.id ).update({
+            color: colorName,
+        });
+        selected.addWithUpdate();
+        canvas.renderAll();
+    }
+}
+
 function updateNamesVisible(checkbox) {
     namesVisible = checkbox.checked;
     for(var i = 1; i <= dancerCount; i++) {
@@ -101,7 +117,8 @@ function replaceDancer(j, removedID, removedDancer){
         database.ref("/" + id + "/" + j + "/" + removedID).set({
             x: snapshot.val().x,
             y: snapshot.val().y,
-            name: snapshot.val().name
+            name: snapshot.val().name,
+            color: snapshot.val().color
         });
         database.ref("/" + id + "/" + j + "/" + removedDancer).remove(); 
     });  
@@ -218,9 +235,9 @@ function drawCanvas(id) {
                 selected = null;
                 $("#name").val("");
             }
-            $("#name").css("display","none");
+            $("#panel").css("display","none");
             if (e.target && isChoreographer) {
-                if(e.e.shiftKey){
+                if(e.e.shiftKey && namesVisible){
                     addName(e.target);
                 }
                 else {
@@ -250,9 +267,9 @@ function addName(target) {
     selected = target;
     var nameText = selected.item(2).text;
     $("#name").val(nameText);
-    $("#name").css("display","inherit");
-    $("#name").css("top", target.getTop() + 34);
-    $("#name").css("left", target.getLeft() - 25);        
+    $("#panel").css("display","inherit");
+    $("#panel").css("top", target.getTop() + 34);
+    $("#panel").css("left", target.getLeft() - 30);        
 }
 
 // initial pull of all dancers
@@ -272,11 +289,16 @@ function drawDancers(snapshot) {
         canvas.renderAll();
     }
     for(var i = 1; i <= dancerCount; i++){
+        if(snapshot.val()[i].color == null && isChoreographer) {
+            database.ref("/" + id + "/" + currentFormation + "/" + i ).update({
+                color: 'white',
+            });
+        }
         if(dancers[i] == null){
             var circle = new fabric.Circle({
                 radius: 16,
                 fill : 'rgba(255, 255, 255, 0.2)',
-                stroke: 'white',
+                stroke: snapshot.val()[i].color,
                 strokeWidth: 2,
                 hasControls: false,
                 lockScalingX: true,
@@ -334,6 +356,7 @@ function drawDancers(snapshot) {
         else {
             dancers[i].name = snapshot.val()[i].name;
             dancers[i].item(2).setText(snapshot.val()[i].name);
+            dancers[i].item(0).stroke = snapshot.val()[i].color; 
             dancers[i].addWithUpdate();
             if(i == dancerCount){
                 dancers[i].animate('top', snapshot.val()[i].y, {
@@ -439,7 +462,8 @@ function addDancer() {
             database.ref("/" + id + "/" + j + "/" + t ).set({
                 x: i*grid + 16 - xOffset,
                 y: y,
-                name: ""
+                name: "",
+                color: 'white'
             });
         }
         

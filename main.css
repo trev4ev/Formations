@@ -35,12 +35,7 @@ button {
     font-weight: 200;
 }
 
-button:disabled {
-    color: dimgray;
-    border-color: dimgray;
-}
-
-button:hover:enabled {
+.hoverChange:hover:enabled {
     color: black;
     background-color: white;
 }
@@ -65,14 +60,48 @@ input {
     margin-bottom: 8px;
 }
 
-#name {
+#panel {
     position: absolute;
-    z-index: 1;
     display: none;
+    z-index: 1;
+    width: 60px;
+    padding: 0;
+}
+
+#name {
     padding: 0;
     font-size: 14px;
     text-align: center;
-    width: 50px;
+    width: 60px;
+    border: 0;
+}
+
+.colorChoice {
+    padding: 0;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    border-color: black;
+}
+
+.colorChoice:hover {
+    border-color: white;
+}
+
+#white {
+    background-color: white;
+}
+
+#green {
+    background-color: #64ff64;
+}
+
+#blue {
+    background-color: #4b90ff;
+}
+
+#red {
+    background-color: #ff5555;
 }
 
 #second {
