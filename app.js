@@ -252,10 +252,9 @@ function drawCanvas(id) {
             if (e.target && isChoreographer) {
                 e.target.opacity = 1;
                 canvas.renderAll();
-                database.ref("/" + id + "/" + currentFormation + "/" + e.target.id).set({
+                database.ref("/" + id + "/" + currentFormation + "/" + e.target.id).update({
                     x: e.target.left,
                     y: e.target.top,
-                    name: e.target.name
                 });
             }
         },
@@ -289,11 +288,6 @@ function drawDancers(snapshot) {
         canvas.renderAll();
     }
     for(var i = 1; i <= dancerCount; i++){
-        if(snapshot.val()[i].color == null && isChoreographer) {
-            database.ref("/" + id + "/" + currentFormation + "/" + i ).update({
-                color: 'white',
-            });
-        }
         if(dancers[i] == null){
             var circle = new fabric.Circle({
                 radius: 16,
