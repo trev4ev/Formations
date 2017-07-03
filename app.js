@@ -1,5 +1,5 @@
 $(document).bind("contextmenu",function(e) {
-    //e.preventDefault();
+    e.preventDefault();
 });
 
 var config = {
