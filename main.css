@@ -110,5 +110,52 @@ input {
 
 #first {
     margin-top: 32vh;
-}   
+}  
+
+#rotateScreen {
+    display: none;
+}
+
+@media only screen and (max-width: 800px), only screen and (max-device-width: 800px) {
+    #email, #password, #choreographerLogin {
+        display: none;
+    }
+    
+    #first {
+        margin-top: 30vh;
+    }
+    
+    .login {
+        width: 30vw;
+        font-size: 30px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+    
+    .loginButton {
+        font-size: 20px;
+        border: 5px solid white;
+        padding: 15px;
+        margin: 10px;
+    }
+    
+    .hoverChange:hover:enabled {
+        color: white;
+        background-color: black;
+    }
+}
+
+@media screen and (orientation:portrait) {
+    #first{
+        display: none;
+    }
+    
+    #rotateScreen {
+        display: inherit;
+        width: 30vw;
+        margin: auto;
+        margin-top: 40vh;
+    }
+}
 
