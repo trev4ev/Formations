@@ -24,27 +24,29 @@
     </head>
     <body>
         <img id = "rotateScreen" src = 'rotateScreen.png'>
-        <div id = "first">
-            <input class = "login" id = "email" placeholder = "Email">
-            <input class = "login" id = "password" type = "password" placeholder = "Password">
-            <input class = "login" id = "id" placeholder = "Dance ID">
-            <button class = "hoverChange loginButton" id = "choreographerLogin" onclick="loadFormation(true)">Choreographer</button>
-            <button class = "hoverChange loginButton" onclick="loadFormation(false)">Dancer</button>
-        </div>
-        <div id = "second">
-            <canvas id="canvas" width="1025" height="449"></canvas>
-            <div id = "choreographer">
-                <input id = "amount" value = "1">
-                <button class = "hoverChange" onclick="addDancer()">Add Dancers</button>
+        <div id = "content">
+            <div id = "first">
+                <input class = "login" id = "email" placeholder = "Email">
+                <input class = "login" id = "password" type = "password" placeholder = "Password">
+                <input class = "login" id = "id" placeholder = "Dance ID">
+                <button class = "hoverChange loginButton" id = "choreographerLogin" onclick="loadFormation(true)">Choreographer</button>
+                <button class = "hoverChange loginButton" onclick="loadFormation(false)">Dancer</button>
             </div>
-            <div id = labels>
-                <h4 id = "dancerCount">Dancers: 0</h4>
-                <h4 id = "currentFormation">Formation: 1 of 1</h4>
-                <input type = "checkbox" onclick = "updateNamesVisible(this)" checked style = "margin-right: 0.5vw; width: auto; margin-left: 2vw;"><h4 style = "margin-left: 0;">Names Visible</h4> <br>
+            <div id = "second">
+                <canvas id="canvas" width="1025" height="449"></canvas>
+                <div id = "choreographer">
+                    <input id = "amount" value = "1">
+                    <button class = "hoverChange" onclick="addDancer()">Add Dancers</button>
+                </div>
+                <div id = labels>
+                    <h4 id = "dancerCount">Dancers: 0</h4>
+                    <h4 id = "currentFormation">Formation: 1 of 1</h4>
+                    <input type = "checkbox" onclick = "updateNamesVisible(this)" checked style = "margin-right: 0.5vw; width: auto; margin-left: 2vw;"><h4 style = "margin-left: 0;">Names Visible</h4> <br>
+                </div>
+                <button class = "hoverChange" id = "prev" onclick="previousFormation()"><</button>
+                <button class = "hoverChange" id = "deleteFormation" onclick = "deleteFormation()">Delete Formation</button>
+                <button class = "hoverChange" id = "next" onclick="nextFormation()">></button>
             </div>
-            <button class = "hoverChange" id = "prev" onclick="previousFormation()"><</button>
-            <button class = "hoverChange" id = "deleteFormation" onclick = "deleteFormation()">Delete Formation</button>
-            <button class = "hoverChange" id = "next" onclick="nextFormation()">></button>
         </div>
         <script src="bower_components/fabric.js/dist/fabric.js"></script>
         <script src="jquery-3.2.1.min.js"></script>

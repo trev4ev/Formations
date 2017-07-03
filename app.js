@@ -1,3 +1,7 @@
+$(document).bind("contextmenu",function(e) {
+    //e.preventDefault();
+});
+
 var config = {
     apiKey: "AIzaSyDwDVJ4DIHFWPBQYMaiARoiEFGy9Bfa3ZE",
     authDomain: "formations-7d385.firebaseapp.com",
@@ -89,6 +93,9 @@ window.onkeyup = function(e) {
     }
     else if(code == 39){
         nextFormation();
+    }
+    else if(code == 123) {
+        return false;
     }
 }
 
