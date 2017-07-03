@@ -147,7 +147,7 @@ input {
 }
 
 @media screen and (orientation:portrait) {
-    #first{
+    #content{
         display: none;
     }
     
