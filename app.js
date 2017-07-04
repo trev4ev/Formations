@@ -182,8 +182,8 @@ function loadFormation(x) {
                 if(screen.width < 1025) {
                     var leftMargin = 512 - $("#controls").width()/2;
                     $("#controls").css("margin-left", leftMargin + "px");
-                    var right = 1025 - 100;
-                    $("#next").css("right", right + "px");
+                    var left = 1025 - 100;
+                    $("#next").css("left", right + "px");
                     var top = 500/2 - 50;
                     $("#prev").css("top", top + "px");
                     $("#next").css("top", top + "px");
