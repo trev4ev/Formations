@@ -88,10 +88,10 @@ window.onkeyup = function(e) {
             }
         }
     }
-    if(code == 37){
+    if(code == 37 && selected == null){
         previousFormation();
     }
-    else if(code == 39){
+    else if(code == 39 && selected == null){
         nextFormation();
     }
     else if(code == 123) {
