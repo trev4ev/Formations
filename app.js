@@ -177,9 +177,12 @@ function loadFormation(x) {
             else{
                 $("#first").css("display","none");
                 $("#second").css("display","inherit");
-                if(!isChoreographer){
-                    $("#choreographer").css("display","none");
-                    $("#deleteFormation").css("display", "none");
+                $("#choreographer").css("display","none");
+                $("#deleteFormation").css("display", "none");
+                if(screen.width < 1025) {
+                    var leftMargin = 512 - $("#controls").width()/2;
+                    console.log(leftMargin);
+                    $("#controls").css("margin-left", leftMargin + "px");
                 }
                 maxFormation = parseInt(snapshot.val().maxFormation);
                 dancerCount = parseInt(snapshot.val().dancerCount);

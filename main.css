@@ -116,6 +116,12 @@ input {
     display: none;
 }
 
+#controls {
+    margin: auto;
+    display: inline-block;
+    width: 420px;
+}
+
 @media only screen and (max-width: 800px), only screen and (max-device-width: 800px) {
     #email, #password, #choreographerLogin {
         display: none;
