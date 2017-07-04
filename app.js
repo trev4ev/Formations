@@ -182,9 +182,6 @@ function loadFormation(x) {
                 if(screen.width < 1025) {
                     var leftMargin = 512 - $("#controls").width()/2;
                     $("#controls").css("margin-left", leftMargin + "px");
-                    var top = screen.height/2 - 50;
-                    $("#prev").css("top", top + "px");
-                    $("#next").css("top", top + "px");
                 }
                 maxFormation = parseInt(snapshot.val().maxFormation);
                 dancerCount = parseInt(snapshot.val().dancerCount);
