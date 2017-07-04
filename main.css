@@ -152,7 +152,7 @@ input {
     }
     
     #prev {
-        position: absolute;
+        position: fixed;
         left: 0;
         font-size: 30px;
         padding: 30px;
@@ -162,7 +162,8 @@ input {
     }
     
     #next {
-        position: absolute;
+        position: fixed;
+        right: 0;
         font-size: 30px;
         padding: 30px;
         width: 100px;
