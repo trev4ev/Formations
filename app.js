@@ -50,8 +50,8 @@ for (var i = 0; i < ((1024 + grid) / grid); i++) {
     }
 }
 
-canvas.add(new fabric.Line([ 0, 7 * grid, 1024, 7 * grid], { stroke: '#005cba', selectable: false, evented: false }));
-canvas.add(new fabric.Line([ 16 * grid, 0, 16 * grid, 448], { stroke: '#005cba', selectable: false, evented: false }));
+canvas.add(new fabric.Line([ 0, 7 * grid, 1024, 7 * grid], { stroke: '#a2a2a2', selectable: false, evented: false }));
+canvas.add(new fabric.Line([ 16 * grid, 0, 16 * grid, 448], { stroke: '#a2a2a2', selectable: false, evented: false }));
 
 firebase.initializeApp(config);
 
