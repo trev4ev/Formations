@@ -1,5 +1,10 @@
 # [Formations](https://trev4ev.github.io/Formations/)
 
+* [Overview](https://github.com/trev4ev/Formations#overview)
+* [Tutorial for Choreographers](https://github.com/trev4ev/Formations#tutorial-for-choreographers)
+* [Tutorial for Dancers](https://github.com/trev4ev/Formations#tutorial-for-dancers)
+* [Features to be Added](https://github.com/trev4ev/Formations#features-to-be-added)
+
 ## Overview
 Formations is a web application that allows dance choreographers to collaborate on the creation of their formations and share them easily with the other dancers. Formations update in real time so choreographers can edit the same formation at the same time.
 
